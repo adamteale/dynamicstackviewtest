@@ -16,9 +16,12 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     
     @IBOutlet weak var logo: UIImageView!
     
+    var bottomButtonExposed = false
+    var bottomButtonExposedTriggered = false
     var logoContraintBottom = NSLayoutConstraint()
     
     @IBOutlet weak var scrollViewLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomButtonBottomConstraint: NSLayoutConstraint!
     
     var hamburgerOpened = false
     
@@ -37,6 +40,8 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         view.addConstraint(NSLayoutConstraint(item: logo, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 100))
         logoContraintBottom = NSLayoutConstraint(item: logo, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)
         view.addConstraint(logoContraintBottom)
+        
+        bottomButtonBottomConstraint.constant = -50
 
     }
     
@@ -102,6 +107,23 @@ class ViewController: UIViewController, UIScrollViewDelegate {
             let amount = (scrollView.contentOffset.y / CGFloat(itemIndex)) / 5
             if amount > 0{
                 aView.center.x = view.frame.width/2 + sin( amount ) * 50
+            }
+        }
+        
+        if scrollView.contentOffset.y < 0 {
+            if bottomButtonExposedTriggered == false {
+                UIView.animate(withDuration: 0.25) {
+                    self.bottomButtonBottomConstraint.constant = self.bottomButtonExposed ? -50 : 50
+                    self.bottomButtonExposed = !self.bottomButtonExposed
+                    //IMPORTANT
+                    self.view.layoutIfNeeded()
+                }
+            }
+            bottomButtonExposedTriggered = true
+            
+        }else {
+            if bottomButtonExposedTriggered == true {
+                bottomButtonExposedTriggered = false
             }
         }
     }
